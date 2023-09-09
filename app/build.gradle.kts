@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -11,8 +13,8 @@ android {
         applicationId = "com.ldhdev.dimipay"
         minSdk = 33
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -20,19 +22,31 @@ android {
         }
     }
 
+
+    signingConfigs {
+        create("release") {
+            val properties = gradleLocalProperties(rootDir)
+
+            storeFile = file(properties.getProperty("store.file"))
+            storePassword = properties.getProperty("store.password")
+            keyAlias = properties.getProperty("key.alias")
+            keyPassword = properties.getProperty("key.password")
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-    }
 
-    signingConfigs {
-        create("release") {
-            
+            signingConfig = signingConfigs.getByName("release")
+
+            ndk.debugSymbolLevel = "FULL"
         }
     }
 
