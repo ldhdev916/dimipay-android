@@ -9,9 +9,20 @@ import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.ldhdev.dimipay.ui.theme.DimipayTheme
@@ -19,9 +30,12 @@ import com.ldhdev.dimipay.ui.theme.DimipayTheme
 private const val DIMIPAY_URL = "https://dimipay.ldhdev.com"
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            var currentWebView by remember { mutableStateOf<WebView?>(null) }
 
             DimipayTheme {
                 Surface(
@@ -42,28 +56,41 @@ class MainActivity : ComponentActivity() {
 
                     }
 
-                    AndroidView(
-                        factory = {
-                            WebView(it).apply {
-
-                                layoutParams = ViewGroup.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT
-                                )
-
-                                webViewClient = WebViewClient()
-                                webChromeClient = WebChromeClient()
-
-                                settings.javaScriptEnabled = true
-                                settings.domStorageEnabled = true
-
-                                loadUrl(DIMIPAY_URL)
+                    Scaffold(
+                        floatingActionButton = {
+                            FloatingActionButton(
+                                onClick = { currentWebView?.reload() }
+                            ) {
+                                Icon(Icons.Filled.Refresh, contentDescription = "새로고침")
                             }
-                        },
-                        update = {
-                            it.loadUrl(DIMIPAY_URL)
                         }
-                    )
+                    ) { innerPadding ->
+                        AndroidView(
+                            modifier = Modifier.padding(innerPadding),
+                            factory = {
+                                WebView(it).apply {
+                                    currentWebView = this
+
+                                    layoutParams = ViewGroup.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.MATCH_PARENT
+                                    )
+
+                                    webViewClient = WebViewClient()
+                                    webChromeClient = WebChromeClient()
+
+                                    settings.javaScriptEnabled = true
+                                    settings.domStorageEnabled = true
+
+                                    loadUrl(DIMIPAY_URL)
+                                }
+                            },
+                            update = {
+                                currentWebView = it
+                                it.loadUrl(DIMIPAY_URL)
+                            }
+                        )
+                    }
                 }
             }
         }

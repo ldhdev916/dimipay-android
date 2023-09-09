@@ -31,7 +31,6 @@ platform :android do
     upload_to_play_store(
      track: 'internal',
      version_name: version_text,
-     release_status: 'draft',
      mapping_paths: [
         'app/build/outputs/mapping/release/mapping.txt'
      ]
