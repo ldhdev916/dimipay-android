@@ -17,7 +17,6 @@ default_platform(:android)
 
 platform :android do
     lane :deploy do
-    gradle(task: "clean bundleRelease")
 
     gradle_file = 'app/build.gradle.kts'
 
@@ -25,6 +24,8 @@ platform :android do
 
     latest_version_code = google_play_track_version_codes(track: 'internal').max
     android_set_version_code(gradle_file: gradle_file, version_code: latest_version_code + 1)
+
+    gradle(task: "clean bundleRelease")
 
     version_text = "#{latest_version_code + 1} (#{version_name})"
 
