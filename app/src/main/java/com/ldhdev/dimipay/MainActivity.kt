@@ -1,12 +1,6 @@
 package com.ldhdev.dimipay
 
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebChromeClient
@@ -40,29 +34,6 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        with(getSystemService(NOTIFICATION_SERVICE) as NotificationManager) {
-            createNotificationChannel(
-                NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID,
-                    "흔들림 감지",
-                    NotificationManager.IMPORTANCE_HIGH
-                )
-            )
-
-            if (!areNotificationsEnabled()) {
-                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 0)
-            }
-        }
-
-        if (!Settings.canDrawOverlays(this)) {
-            val intent =
-                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-
-            startActivity(intent)
-        }
-
-        scheduleDimipayAlarm()
 
         setContent {
 
